@@ -2,7 +2,7 @@
 
 | Day    | Part 1 | Part 2 | org-mode Notebook | Tangled code |
 |--------+--------+--------+-------------------+--------------|
-| Day 1  |        |        |                   |              |
+| Day 1  | ✅    |        | [[file:./day-01/solution.org][solution.org]]      | [[file:./day-01/solution.ml][solution.ml]]  |
 | Day 2  |        |        |                   |              |
 | Day 3  |        |        |                   |              |
 | Day 4  |        |        |                   |              |
