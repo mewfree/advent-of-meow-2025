@@ -1,6 +1,7 @@
 #+title: Advent of Code 2025 Day 1
 #+property: header-args :tangle solution.ml
 
+* Part 1
 #+begin_src ocaml :exports both
 let parse str =
   Scanf.sscanf str "%c%d" (fun dir num ->
@@ -45,5 +46,56 @@ let zero_count =
 : 3
 
 #+begin_src ocaml :results none :exports none
-let () = print_endline ("Result: " ^ string_of_int zero_count)
+let () = print_endline ("Part 1: " ^ string_of_int zero_count)
+#+end_src
+
+* Part 2
+#+begin_src ocaml :exports both
+let count_zeros start delta =
+  let positive_mod n = let r = n mod 100 in if r < 0 then r + 100 else r in
+  let end_pos = positive_mod (start + delta) in
+
+  let count = match delta with
+    | 0 -> 0
+    | d when d > 0 ->
+        let first_zero_at = if start = 0 then 100 else 100 - start in
+        max 0 ((d - first_zero_at + 100) / 100)
+    | d ->
+        let first_zero_at = if start = 0 then 100 else start in
+        max 0 ((-d - first_zero_at + 100) / 100)
+  in
+  (end_pos, count)
+
+let crossings =
+  let _, results = List.fold_left (fun (pos, acc) delta ->
+    let new_pos, zeros = count_zeros pos delta in
+    (new_pos, (pos, delta, new_pos, zeros) :: acc)
+  ) (50, []) input in
+  List.rev results
+#+end_src
+
+#+RESULTS:
+| 50 | -68 | 82 | 1 |
+| 82 | -30 | 52 | 0 |
+| 52 |  48 |  0 | 1 |
+|  0 |  -5 | 95 | 0 |
+| 95 |  60 | 55 | 1 |
+| 55 | -55 |  0 | 1 |
+|  0 |  -1 | 99 | 0 |
+| 99 | -99 |  0 | 1 |
+|  0 |  14 | 14 | 0 |
+| 14 | -82 | 32 | 1 |
+
+#+begin_src ocaml :exports both
+let part2 =
+  crossings
+  |> List.map (fun (_, _, _, zeros) -> zeros)
+  |> List.fold_left (+) 0
+#+end_src
+
+#+RESULTS:
+: 6
+
+#+begin_src ocaml :results none :exports none
+let () = print_endline ("Part 2: " ^ string_of_int part2)
 #+end_src

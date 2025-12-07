@@ -26,4 +26,33 @@ let zero_count =
   |> List.filter (fun x -> x = 0)
   |> List.length
 
-let () = print_endline ("Result: " ^ string_of_int zero_count)
+let () = print_endline ("Part 1: " ^ string_of_int zero_count)
+
+let count_zeros start delta =
+  let positive_mod n = let r = n mod 100 in if r < 0 then r + 100 else r in
+  let end_pos = positive_mod (start + delta) in
+
+  let count = match delta with
+    | 0 -> 0
+    | d when d > 0 ->
+        let first_zero_at = if start = 0 then 100 else 100 - start in
+        max 0 ((d - first_zero_at + 100) / 100)
+    | d ->
+        let first_zero_at = if start = 0 then 100 else start in
+        max 0 ((-d - first_zero_at + 100) / 100)
+  in
+  (end_pos, count)
+
+let crossings =
+  let _, results = List.fold_left (fun (pos, acc) delta ->
+    let new_pos, zeros = count_zeros pos delta in
+    (new_pos, (pos, delta, new_pos, zeros) :: acc)
+  ) (50, []) input in
+  List.rev results
+
+let part2 =
+  crossings
+  |> List.map (fun (_, _, _, zeros) -> zeros)
+  |> List.fold_left (+) 0
+
+let () = print_endline ("Part 2: " ^ string_of_int part2)
