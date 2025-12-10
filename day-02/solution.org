@@ -1,6 +1,7 @@
 #+title: Advent of Code 2025 Day 2
 #+property: header-args :tangle solution.ml
 
+* Part 1
 #+begin_src ocaml :exports both
 let input =
   In_channel.with_open_text "example.txt" In_channel.input_all
@@ -61,5 +62,49 @@ let sum = List.fold_left (+) 0 all_invalid_ids
 : 1227775554
 
 #+begin_src ocaml :results none :exports none
-let () = print_endline ("Result: " ^ string_of_int sum)
+let () = print_endline ("Part 1: " ^ string_of_int sum)
+#+end_src
+
+* Part 2
+#+begin_src ocaml :exports both
+let is_invalid_id_p2 n =
+  let s = string_of_int n in
+  let len = String.length s in
+  len > 1 &&
+  let rec check_pattern pattern_len =
+    if pattern_len > len / 2 then false
+    else if len mod pattern_len = 0 then
+      let pattern = String.sub s 0 pattern_len in
+      let rec all_match pos =
+        pos >= len ||
+        (String.sub s pos pattern_len = pattern && all_match (pos + pattern_len))
+      in
+      all_match pattern_len || check_pattern (pattern_len + 1)
+    else check_pattern (pattern_len + 1)
+  in
+  check_pattern 1
+
+let find_invalid_ids_in_range_p2 (start_id, end_id) =
+  let rec aux acc current =
+    if current > end_id then List.rev acc
+    else aux (if is_invalid_id_p2 current then current :: acc else acc) (current + 1)
+  in
+  aux [] start_id
+
+let all_invalid_ids_p2 =
+    List.concat_map find_invalid_ids_in_range_p2 ranges
+#+end_src
+
+#+RESULTS:
+| 11 | 22 | 99 | 111 | 999 | 1010 | 1188511885 | 222222 | 446446 | 38593859 | 565656 | 824824824 | 2121212121 |
+
+#+begin_src ocaml :exports both
+let sum_p2 = List.fold_left (+) 0 all_invalid_ids_p2
+#+end_src
+
+#+RESULTS:
+: 4174379265
+
+#+begin_src ocaml :results none :exports none
+let () = print_endline ("Part 2: " ^ string_of_int sum_p2)
 #+end_src
