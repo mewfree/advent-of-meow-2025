@@ -1,0 +1,65 @@
+#+title: Advent of Code 2025 Day 2
+#+property: header-args :tangle solution.ml
+
+#+begin_src ocaml :exports both
+let input =
+  In_channel.with_open_text "example.txt" In_channel.input_all
+  |> String.trim
+  |> String.split_on_char ','
+#+end_src
+
+#+RESULTS:
+| 11-22 | 95-115 | 998-1012 | 1188511880-1188511890 | 222220-222224 | 1698522-1698528 | 446443-446449 | 38593856-38593862 | 565653-565659 | 824824821-824824827 | 2121212118-2121212124 |
+
+#+begin_src ocaml :exports both
+let parse str =
+  Scanf.sscanf str "%d-%d" (fun start_id end_id -> (start_id, end_id))
+
+let ranges = List.map parse input
+#+end_src
+
+#+RESULTS:
+|         11 |         22 |
+|         95 |        115 |
+|        998 |       1012 |
+| 1188511880 | 1188511890 |
+|     222220 |     222224 |
+|    1698522 |    1698528 |
+|     446443 |     446449 |
+|   38593856 |   38593862 |
+|     565653 |     565659 |
+|  824824821 |  824824827 |
+| 2121212118 | 2121212124 |
+
+#+begin_src ocaml :exports both
+let is_invalid_id n =
+  let s = string_of_int n in
+  let len = String.length s in
+  len mod 2 = 0 &&
+  let half = len / 2 in
+  String.sub s 0 half = String.sub s half half
+
+let find_invalid_ids_in_range (start_id, end_id) =
+  let rec aux acc current =
+    if current > end_id then List.rev acc
+    else aux (if is_invalid_id current then current :: acc else acc) (current + 1)
+  in
+  aux [] start_id
+
+let all_invalid_ids =
+    List.concat_map find_invalid_ids_in_range ranges
+#+end_src
+
+#+RESULTS:
+| 11 | 22 | 99 | 1010 | 1188511885 | 222222 | 446446 | 38593859 |
+
+#+begin_src ocaml :exports both
+let sum = List.fold_left (+) 0 all_invalid_ids
+#+end_src
+
+#+RESULTS:
+: 1227775554
+
+#+begin_src ocaml :results none :exports none
+let () = print_endline ("Result: " ^ string_of_int sum)
+#+end_src
